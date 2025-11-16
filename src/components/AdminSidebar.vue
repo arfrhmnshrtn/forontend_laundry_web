@@ -1,12 +1,16 @@
 <template>
   <aside
+    ref="sidebarRef"
     :class="[
       'bg-gray-900 text-white fixed left-0 top-16 bottom-0 overflow-y-auto overflow-x-hidden transition-all duration-300',
-      isOpen ? 'w-64 z-30' : 'w-20 lg:w-20 max-lg:hidden z-20',
+      isOpen
+        ? 'w-64 z-30'
+        : 'w-20 max-lg:-translate-x-full lg:translate-x-0 z-20',
     ]"
   >
     <nav class="p-4">
       <ul class="space-y-2">
+        <!-- Dashboard -->
         <li class="relative group">
           <router-link
             to="/"
@@ -18,7 +22,7 @@
             @click="handleMenuClick"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -32,6 +36,8 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Dashboard</span>
           </router-link>
+
+          <!-- Tooltip -->
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -43,6 +49,7 @@
           </div>
         </li>
 
+        <!-- Data Pelanggan -->
         <li class="relative group">
           <router-link
             to="/customers"
@@ -54,7 +61,7 @@
             @click="handleMenuClick"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -68,6 +75,8 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Data Pelanggan</span>
           </router-link>
+
+          <!-- Tooltip -->
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -79,6 +88,7 @@
           </div>
         </li>
 
+        <!-- Data Transaksi -->
         <li class="relative group">
           <router-link
             to="/transactions"
@@ -90,7 +100,7 @@
             @click="handleMenuClick"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -104,6 +114,7 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Data Transaksi</span>
           </router-link>
+
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -115,6 +126,7 @@
           </div>
         </li>
 
+        <!-- Kelola Layanan -->
         <li class="relative group">
           <router-link
             to="/kelola-layanan"
@@ -126,7 +138,7 @@
             @click="handleMenuClick"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -140,6 +152,7 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Kelola Layanan</span>
           </router-link>
+
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -151,6 +164,7 @@
           </div>
         </li>
 
+        <!-- Data Laporan -->
         <li class="relative group">
           <router-link
             to="/reports"
@@ -162,7 +176,7 @@
             @click="handleMenuClick"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -176,6 +190,7 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Data Laporan</span>
           </router-link>
+
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -187,6 +202,7 @@
           </div>
         </li>
 
+        <!-- Settings -->
         <li class="pt-4 mt-4 border-t border-gray-700 relative group">
           <router-link
             to="/settings"
@@ -198,7 +214,7 @@
             @click="handleMenuClick"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -218,6 +234,7 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Settings</span>
           </router-link>
+
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -229,6 +246,7 @@
           </div>
         </li>
 
+        <!-- Logout -->
         <li class="relative group">
           <button
             @click="handleLogout"
@@ -238,7 +256,7 @@
             ]"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
+              class="w-5 h-5 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -252,6 +270,7 @@
             </svg>
             <span v-if="isOpen" class="font-medium">Logout</span>
           </button>
+
           <div
             v-if="!isOpen"
             class="absolute left-full ml-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 top-1/2 -translate-y-1/2"
@@ -269,29 +288,55 @@
 
 <script setup>
 import { useRouter } from "vue-router";
+import { ref, onMounted, onUnmounted } from "vue";
+import authService from "../services/auth";
 
 const router = useRouter();
 
 const props = defineProps({
   isOpen: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 
-const emit = defineEmits(["open-sidebar"]);
+const emit = defineEmits(["open-sidebar", "close-sidebar"]);
 
+const sidebarRef = ref(null);
+
+/* AUTO CLOSE SAAT KLIK MENU DI TABLET/MOBILE */
 const handleMenuClick = () => {
-  if (!props.isOpen) {
+  if (window.innerWidth < 1024) {
+    emit("close-sidebar");
+  } else if (!props.isOpen) {
     emit("open-sidebar");
   }
 };
 
+/* AUTO CLOSE SAAT KLIK DI LUAR SIDEBAR */
+const handleOutsideClick = (event) => {
+  if (window.innerWidth < 1024 && props.isOpen) {
+    if (sidebarRef.value && !sidebarRef.value.contains(event.target)) {
+      emit("close-sidebar");
+    }
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleOutsideClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleOutsideClick);
+});
+
+/* LOGOUT */
 const handleLogout = () => {
   if (confirm("Apakah Anda yakin ingin keluar?")) {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
+    authService.logout();
     router.push("/");
   }
 };
 </script>
+
+<style scoped></style>

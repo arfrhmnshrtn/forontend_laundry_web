@@ -10,7 +10,7 @@
       <div class="flex items-center gap-4">
         <button
           @click="$router.push('/customers')"
-          class="text-gray-600 hover:text-gray-800 transition-colors"
+          class="text-gray-600 hover:text-gray-800 transition-colors cursor-pointer"
         >
           <svg
             class="w-6 h-6"
@@ -72,14 +72,14 @@
             <button
               type="button"
               @click="$router.push('/customers')"
-              class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="loading"
-              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
             >
               <span
                 v-if="loading"

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-opacity-40 z-50 flex items-center justify-center p-4"
     @click.self="handleClose"
   >
     <div :class="['bg-white rounded-lg shadow overflow-hidden', sizeClass]">
@@ -9,9 +9,14 @@
         <h3 class="text-lg font-bold">{{ title }}</h3>
         <button
           @click="handleClose"
-          class="text-gray-400 hover:text-gray-600 transition-colors"
+          class="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -21,11 +26,11 @@
           </svg>
         </button>
       </div>
-      
+
       <div class="p-6">
         <slot></slot>
       </div>
-      
+
       <div v-if="$slots.footer" class="p-6 border-t">
         <slot name="footer"></slot>
       </div>
@@ -34,37 +39,37 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
   show: {
     type: Boolean,
-    default: false
+    default: false,
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   size: {
     type: String,
-    default: 'md',
-    validator: (value) => ['sm', 'md', 'lg', 'xl'].includes(value)
-  }
+    default: "md",
+    validator: (value) => ["sm", "md", "lg", "xl"].includes(value),
+  },
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const sizeClass = computed(() => {
   const sizes = {
-    sm: 'max-w-sm w-full',
-    md: 'max-w-md w-full',
-    lg: 'max-w-2xl w-full',
-    xl: 'max-w-4xl w-full'
+    sm: "max-w-sm w-full",
+    md: "max-w-md w-full",
+    lg: "max-w-2xl w-full",
+    xl: "max-w-4xl w-full",
   };
   return sizes[props.size];
 });
 
 const handleClose = () => {
-  emit('close');
+  emit("close");
 };
 </script>

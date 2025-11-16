@@ -282,10 +282,14 @@
                           :value="service.id"
                         >
                           {{ service.nama_layanan }} - Rp
-                          {{ formatPrice(service.harga) }}/{{ service.satuan_harga }} ({{
-                            service.durasi
+                          {{ formatPrice(service.harga) }}/{{
+                            service.satuan_harga
                           }}
-                          hari)
+                          ({{
+                            service.durasi > 24
+                              ? Math.floor(service.durasi / 24) + " hari"
+                              : service.durasi + " jam"
+                          }})
                         </option>
                       </optgroup>
                       <optgroup
@@ -298,9 +302,10 @@
                           :value="service.id"
                         >
                           {{ service.nama_layanan }} - Rp
-                          {{ formatPrice(service.harga) }}/{{ service.satuan_harga }} ({{
-                            service.durasi
+                          {{ formatPrice(service.harga) }}/{{
+                            service.satuan_harga
                           }}
+                          ({{ service.durasi }}
                           hari)
                         </option>
                       </optgroup>
@@ -324,11 +329,17 @@
                       type="number"
                       required
                       min="0"
-                      :step="item.service?.tipe_layanan?.toLowerCase() === 'kiloan' ? '0.1' : '1'"
+                      :step="
+                        item.service?.tipe_layanan?.toLowerCase() === 'kiloan'
+                          ? '0.1'
+                          : '1'
+                      "
                       @input="calculateServiceItemTotal(index)"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       :placeholder="
-                        item.service?.tipe_layanan?.toLowerCase() === 'kiloan' ? '0.0' : '0'
+                        item.service?.tipe_layanan?.toLowerCase() === 'kiloan'
+                          ? '0.0'
+                          : '0'
                       "
                     />
                   </div>
@@ -523,7 +534,8 @@
                   v-if="getMaxDuration() > 0"
                   class="text-xs text-gray-500 font-normal"
                 >
-                  ({{ getMaxDuration() }} hari dari tanggal masuk)
+                  ({{ getFormattedDuration(getMaxDuration()) }} dari tanggal
+                  masuk)
                 </span>
               </label>
               <input
@@ -708,7 +720,24 @@ const getMaxDuration = () => {
   const durations = selectedServices.value
     .filter((item) => item.service)
     .map((item) => parseInt(item.service.durasi) || 0);
+
+  console.log("Durations:", durations);
+
   return durations.length > 0 ? Math.max(...durations) : 2;
+};
+
+// Format tampilan durasi untuk UI
+const getFormattedDuration = () => {
+  const durasi = getMaxDuration();
+
+  // Jika kurang dari 24 jam → tampil jam
+  if (durasi < 24) {
+    return `${durasi} jam`;
+  }
+
+  // Jika 24 jam atau lebih → tampil hari
+  const hari = Math.floor(durasi / 24);
+  return `${hari} hari`;
 };
 
 const calculateDateOut = () => {
@@ -716,8 +745,16 @@ const calculateDateOut = () => {
     const maxDuration = getMaxDuration();
     const dateIn = new Date(formData.value.dateIn);
     const dateOut = new Date(dateIn);
-    dateOut.setDate(dateIn.getDate() + maxDuration);
-    formData.value.dateOut = dateOut.toISOString().split("T")[0];
+    
+    // Jika durasi kurang dari 24 jam, tanggal selesai = tanggal masuk
+    if (maxDuration < 24) {
+      formData.value.dateOut = dateIn.toISOString().split("T")[0];
+    } else {
+      // Jika 24 jam atau lebih, hitung dalam hari
+      const days = Math.floor(maxDuration / 24);
+      dateOut.setDate(dateIn.getDate() + days);
+      formData.value.dateOut = dateOut.toISOString().split("T")[0];
+    }
   }
 };
 // console.log(fetchServices());
@@ -765,7 +802,8 @@ const saveTransaction = async () => {
         pelanggan_id: selectedCustomerId.value,
         tanggal_masuk: formData.value.dateIn,
         tanggal_selesai: formData.value.dateOut,
-        pembayaran_status: paymentStatusMap[formData.value.paymentMethod] || "Belum Bayar",
+        pembayaran_status:
+          paymentStatusMap[formData.value.paymentMethod] || "Belum Bayar",
         status: formData.value.status,
         catatan: formData.value.notes || "",
         detail: detail,
@@ -778,7 +816,8 @@ const saveTransaction = async () => {
         simpan_pelanggan: saveAsNewCustomer.value,
         tanggal_masuk: formData.value.dateIn,
         tanggal_selesai: formData.value.dateOut,
-        pembayaran_status: paymentStatusMap[formData.value.paymentMethod] || "Belum Bayar",
+        pembayaran_status:
+          paymentStatusMap[formData.value.paymentMethod] || "Belum Bayar",
         status: formData.value.status,
         catatan: formData.value.notes || "",
         detail: detail,
@@ -787,12 +826,14 @@ const saveTransaction = async () => {
 
     // Kirim ke API
     await api.post("/transaksi", transactionData);
-    
+
     alert("Transaksi berhasil disimpan!");
     router.push("/transactions");
   } catch (error) {
     console.error("Error saving transaction:", error);
-    alert("Gagal menyimpan transaksi: " + (error.message || "Terjadi kesalahan"));
+    alert(
+      "Gagal menyimpan transaksi: " + (error.message || "Terjadi kesalahan")
+    );
   }
 };
 </script>

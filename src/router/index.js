@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import authService from '../services/auth'
 import AdminDashboard from '../pages/AdminDashboard.vue'
 import CustomerData from '../pages/CustomerData.vue'
 import AddCustomer from '../pages/AddCustomer.vue'
@@ -72,7 +73,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
+  const isAuthenticated = authService.isAuthenticated()
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/')

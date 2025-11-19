@@ -6,13 +6,19 @@
         <p class="text-gray-600 mt-1">Selamat Datang ...</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div v-if="loading" class="text-center py-12">
+        <div
+          class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+        ></div>
+        <p class="text-gray-600 mt-4">Memuat data dashboard...</p>
+      </div>
+
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Total Order</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">124</p>
-              <p class="text-sm text-green-600 mt-2">+12% dari bulan lalu</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalOrders }}</p>
             </div>
             <div class="bg-blue-100 p-3 rounded-full">
               <svg
@@ -36,8 +42,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Pendapatan</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">Rp. 500.000</p>
-              <p class="text-sm text-green-600 mt-2">+8% dari bulan lalu</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">{{ formatPriceWithCurrency(totalRevenue) }}</p>
             </div>
             <div class="bg-green-100 p-3 rounded-full">
               <svg
@@ -61,8 +66,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Pelanggan</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">86</p>
-              <p class="text-sm text-green-600 mt-2">+15% dari bulan lalu</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalCustomers }}</p>
             </div>
             <div class="bg-purple-100 p-3 rounded-full">
               <svg
@@ -86,8 +90,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Pesanan Tertunda</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">18</p>
-              <p class="text-sm text-orange-600 mt-2">Membutuhkan Perhatian</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">{{ pendingOrders }}</p>
             </div>
             <div class="bg-orange-100 p-3 rounded-full">
               <svg
@@ -113,81 +116,41 @@
           <h3 class="text-lg font-semibold text-gray-800 mb-4">
             Pesanan Terbaru
           </h3>
-          <div class="space-y-3">
+          <div v-if="recentOrders.length > 0" class="space-y-3">
             <div
+              v-for="order in recentOrders"
+              :key="order.id"
               class="flex items-center justify-between py-3 border-b border-gray-100"
             >
               <div class="flex items-center gap-3">
                 <div
                   class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
                 >
-                  <span class="text-blue-600 font-semibold text-sm">#124</span>
+                  <span class="text-blue-600 font-semibold text-sm">#{{ order.id }}</span>
                 </div>
                 <div>
-                  <p class="font-medium text-gray-800">Jon</p>
-                  <p class="text-sm text-gray-500">Cuci & Setrika - 5kg</p>
+                  <p class="font-medium text-gray-800">{{ order.customerName }}</p>
+                  <p class="text-sm text-gray-500">{{ order.services }} - {{ formatWeight(order.berat) }}</p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="font-semibold text-gray-800">Rp.45.000</p>
+                <p class="font-semibold text-gray-800">{{ formatPriceWithCurrency(order.totalPrice) }}</p>
                 <span
-                  class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full"
-                  >Proses</span
-                >
-              </div>
-            </div>
-
-            <div
-              class="flex items-center justify-between py-3 border-b border-gray-100"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
-                >
-                  <span class="text-blue-600 font-semibold text-sm">#123</span>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-800">Jane Smith</p>
-                  <p class="text-sm text-gray-500">Cuci Kering - 3 items</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="font-semibold text-gray-800">Rp.15.000</p>
-                <span
-                  class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"
-                  >Selesai</span
-                >
-              </div>
-            </div>
-
-            <div
-              class="flex items-center justify-between py-3 border-b border-gray-100"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
-                >
-                  <span class="text-blue-600 font-semibold text-sm">#122</span>
-                </div>
-                <div>
-                  <p class="font-medium text-gray-800">Bob Wilson</p>
-                  <p class="text-sm text-gray-500">Cuci Express - 8kg</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="font-semibold text-gray-800">Rp.35.000</p>
-                <span
-                  class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
-                  >Sedang Berlangsung</span
-                >
+                  :class="getStatusBadgeClass(order.status)"
+                  class="text-xs px-2 py-1 rounded-full"
+                >{{ getStatusLabel(order.status) }}</span>
               </div>
             </div>
           </div>
-          <button
-            class="w-full mt-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+          <div v-else class="text-center py-8 text-gray-500">
+            <p>Belum ada pesanan</p>
+          </div>
+          <router-link
+            to="/transactions"
+            class="block w-full mt-4 py-2 text-center text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
           >
             Lihat Semua Pesanan
-          </button>
+          </router-link>
         </div>
 
         <div class="bg-white rounded-lg shadow p-6">
@@ -290,5 +253,86 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue";
 import AdminLayout from "../components/AdminLayout.vue";
+import api from "../services/api";
+import { formatPriceWithCurrency } from "../utils/formatters";
+
+const loading = ref(true);
+const transactions = ref([]);
+const customers = ref([]);
+
+const totalOrders = computed(() => transactions.value.length);
+const totalRevenue = computed(() => 
+  transactions.value.reduce((sum, trx) => sum + parseFloat(trx.total_harga || 0), 0)
+);
+const totalCustomers = computed(() => customers.value.length);
+const pendingOrders = computed(() => 
+  transactions.value.filter(trx => 
+    trx.status.toLowerCase() === 'proses' || 
+    trx.status.toLowerCase() === 'menunggu'
+  ).length
+);
+const recentOrders = computed(() => {
+  const sorted = [...transactions.value].sort((a, b) => 
+    new Date(b.tanggal_masuk) - new Date(a.tanggal_masuk)
+  );
+  return sorted.slice(0, 3).map(trx => {
+    const services = trx.detail_layanan || [];
+    const serviceNames = services.map(s => s.nama_layanan).join(", ");
+    const totalBerat = services.reduce((sum, s) => sum + parseFloat(s.berat || 0), 0);
+    
+    return {
+      id: trx.transaksi_id,
+      customerName: trx.nama_pelanggan,
+      services: serviceNames || "-",
+      berat: totalBerat,
+      totalPrice: parseFloat(trx.total_harga),
+      status: trx.status.toLowerCase()
+    };
+  });
+});
+
+const fetchDashboardData = async () => {
+  loading.value = true;
+  try {
+    const [transactionsRes, customersRes] = await Promise.all([
+      api.get("/transaksi"),
+      api.get("/pelanggan")
+    ]);
+    
+    transactions.value = transactionsRes.data?.data || transactionsRes.data || transactionsRes;
+    customers.value = customersRes || [];
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(fetchDashboardData);
+
+const formatWeight = (weight) => {
+  return weight > 0 ? `${weight} Kg` : "-";
+};
+
+const getStatusLabel = (status) => {
+  const labels = {
+    'proses': 'Proses',
+    'selesai': 'Selesai',
+    'menunggu': 'Menunggu',
+    'diambil': 'Diambil'
+  };
+  return labels[status] || status;
+};
+
+const getStatusBadgeClass = (status) => {
+  const classes = {
+    'proses': 'bg-yellow-100 text-yellow-700',
+    'selesai': 'bg-green-100 text-green-700',
+    'menunggu': 'bg-orange-100 text-orange-700',
+    'diambil': 'bg-blue-100 text-blue-700'
+  };
+  return classes[status] || 'bg-gray-100 text-gray-700';
+};
 </script>

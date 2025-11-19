@@ -35,8 +35,7 @@ export function useTransactions() {
           dateIn: trx.tanggal_masuk,
           dateOut: trx.tanggal_selesai,
           status: trx.status.toLowerCase(),
-          paymentMethod:
-            trx.pembayaran_status === "Bayar Awal" ? "prepaid" : "postpaid",
+          paymentMethod: trx.pembayaran_status,
           paymentStatus:
             parseFloat(trx.pembayaran_awal) > 0 ? "paid" : "unpaid",
           paymentInitial: parseFloat(trx.pembayaran_awal),

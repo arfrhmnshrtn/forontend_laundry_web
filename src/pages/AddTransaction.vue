@@ -495,7 +495,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="hidden grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Status *
@@ -745,7 +745,7 @@ const calculateDateOut = () => {
     const maxDuration = getMaxDuration();
     const dateIn = new Date(formData.value.dateIn);
     const dateOut = new Date(dateIn);
-    
+
     // Jika durasi kurang dari 24 jam, tanggal selesai = tanggal masuk
     if (maxDuration < 24) {
       formData.value.dateOut = dateIn.toISOString().split("T")[0];

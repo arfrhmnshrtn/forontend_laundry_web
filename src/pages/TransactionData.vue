@@ -226,11 +226,40 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4 flex flex-col gap-2 text-xs">
+                  <span
+                    :class="
+                      transaction.paymentMethod === 'Bayar Awal'
+                        ? 'bg-green-400 font-semibold p-1 rounded-xl text-white'
+                        : 'bg-red-400 font-semibold p-1 rounded-xl text-white'
+                    "
+                  >
+                    {{ transaction.paymentMethod }}
+                  </span>
+
                   <StatusBadge :status="transaction.status" />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <div class="flex items-center gap-2">
+                    <button
+                      @click="handleEdit(transaction)"
+                      class="text-blue-600 hover:text-blue-800 transition-colors"
+                      title="Edit"
+                    >
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                    </button>
                     <button
                       @click="handleView(transaction)"
                       class="text-green-600 hover:text-green-800 transition-colors"
@@ -253,25 +282,6 @@
                           stroke-linejoin="round"
                           stroke-width="2"
                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      @click="handleEdit(transaction)"
-                      class="text-blue-600 hover:text-blue-800 transition-colors"
-                      title="Edit"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                         />
                       </svg>
                     </button>
@@ -312,335 +322,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Modal Edit Transaksi -->
-    <BaseModal
-      :show="showEditModal"
-      title="Edit Transaksi"
-      size="xl"
-      @close="closeEditModal"
-    >
-      <form @submit.prevent="saveEditTransaction" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Nama Pelanggan
-            </label>
-            <input
-              v-model="editForm.customerName"
-              type="text"
-              readonly
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              No. Telepon
-            </label>
-            <input
-              v-model="editForm.customerPhone"
-              type="tel"
-              readonly
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-2">
-            <label class="block text-sm font-medium text-gray-700">
-              Jenis Layanan *
-            </label>
-            <button
-              type="button"
-              @click="addEditServiceItem"
-              class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              Tambah Layanan
-            </button>
-          </div>
-
-          <div class="space-y-4">
-            <div
-              v-for="(item, index) in editForm.services"
-              :key="index"
-              class="border border-gray-300 rounded-lg p-4 relative"
-            >
-              <button
-                v-if="editForm.services.length > 1"
-                type="button"
-                @click="removeEditServiceItem(index)"
-                class="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                title="Hapus layanan"
-              >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Pilih Layanan *
-                  </label>
-                  <select
-                    v-model="item.serviceId"
-                    @change="onEditServiceItemChange(index)"
-                    required
-                    :disabled="loadingServices"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  >
-                    <option value="">
-                      {{
-                        loadingServices
-                          ? "Memuat layanan..."
-                          : "Pilih layanan"
-                      }}
-                    </option>
-                    <optgroup
-                      label="Layanan Kiloan"
-                      v-if="kiloServices.length > 0"
-                    >
-                      <option
-                        v-for="service in kiloServices"
-                        :key="service.id"
-                        :value="service.id"
-                      >
-                        {{ service.nama_layanan }} - Rp
-                        {{ formatPrice(service.harga) }}/{{
-                          service.satuan_harga
-                        }}
-                        ({{ formatDuration(service.durasi) }})
-                      </option>
-                    </optgroup>
-                    <optgroup
-                      label="Layanan Satuan"
-                      v-if="pieceServices.length > 0"
-                    >
-                      <option
-                        v-for="service in pieceServices"
-                        :key="service.id"
-                        :value="service.id"
-                      >
-                        {{ service.nama_layanan }} - Rp
-                        {{ formatPrice(service.harga) }}/{{
-                          service.satuan_harga
-                        }}
-                        ({{ formatDuration(service.durasi) }})
-                      </option>
-                    </optgroup>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    {{
-                      item.service?.tipe_layanan?.toLowerCase() === "kiloan"
-                        ? "Berat (kg)"
-                        : "Jumlah (pcs)"
-                    }}
-                    *
-                  </label>
-                  <input
-                    v-model.number="item.quantity"
-                    type="number"
-                    required
-                    min="0"
-                    :step="
-                      item.service?.tipe_layanan?.toLowerCase() === 'kiloan'
-                        ? '0.1'
-                        : '1'
-                    "
-                    @input="calculateEditServiceItemTotal(index)"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Harga per {{ item.service?.satuan_harga || "unit" }}
-                  </label>
-                  <input
-                    :value="
-                      item.service
-                        ? `Rp ${formatPrice(item.service.harga)}`
-                        : ''
-                    "
-                    type="text"
-                    readonly
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-                  />
-                </div>
-
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Subtotal
-                  </label>
-                  <input
-                    :value="`Rp ${formatPrice(item.subtotal)}`"
-                    type="text"
-                    readonly
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-blue-50 cursor-not-allowed font-semibold text-blue-900"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Total Harga
-              </label>
-              <input
-                :value="calculateEditTotal"
-                type="text"
-                readonly
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-not-allowed font-bold text-lg text-blue-900"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">
-                Metode Pembayaran *
-              </label>
-              <div class="space-y-3">
-                <label class="flex items-center cursor-pointer">
-                  <input
-                    v-model="editForm.paymentMethod"
-                    type="radio"
-                    value="prepaid"
-                    required
-                    class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span class="ml-3 text-sm font-medium text-gray-900">
-                    Bayar di Awal
-                  </span>
-                </label>
-                <label class="flex items-center cursor-pointer">
-                  <input
-                    v-model="editForm.paymentMethod"
-                    type="radio"
-                    value="postpaid"
-                    required
-                    class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span class="ml-3 text-sm font-medium text-gray-900">
-                    Bayar di Akhir
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Status *
-            </label>
-            <select
-              v-model="editForm.status"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="pending">Pending</option>
-              <option value="process">Proses</option>
-              <option value="done">Selesai</option>
-              <option value="delivered">Terkirim</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tanggal Masuk *
-            </label>
-            <input
-              v-model="editForm.dateIn"
-              type="date"
-              required
-              @change="calculateEditDateOut"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tanggal Selesai
-              <span
-                v-if="getEditMaxDuration() > 0"
-                class="text-xs text-gray-500 font-normal"
-              >
-                ({{ formatDuration(getEditMaxDuration()) }} dari tanggal masuk)
-              </span>
-            </label>
-            <input
-              v-model="editForm.dateOut"
-              type="date"
-              readonly
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Catatan
-          </label>
-          <textarea
-            v-model="editForm.notes"
-            rows="3"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Catatan tambahan (opsional)"
-          ></textarea>
-        </div>
-
-        <div class="flex gap-3 pt-4 border-t">
-          <button
-            type="button"
-            @click="closeEditModal"
-            class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-          >
-            Batal
-          </button>
-          <button
-            type="submit"
-            :disabled="savingEdit"
-            class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-400 disabled:cursor-not-allowed"
-          >
-            {{ savingEdit ? "Menyimpan..." : "Simpan Perubahan" }}
-          </button>
-        </div>
-      </form>
-    </BaseModal>
   </AdminLayout>
 </template>
 

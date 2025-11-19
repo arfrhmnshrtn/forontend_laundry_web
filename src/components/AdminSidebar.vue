@@ -13,9 +13,9 @@
         <!-- Dashboard -->
         <li class="relative group">
           <router-link
-            to="/"
+            to="/dashboard"
             :class="[
-              'flex items-center rounded-lg hover:bg-gray-800 transition-colors',
+              'flex items-center rounded-lg  hover:bg-gray-800 transition-colors',
               isOpen ? 'gap-3 px-4 py-3' : 'justify-center px-4 py-3',
             ]"
             active-class="bg-blue-600 hover:bg-blue-700"

@@ -21,6 +21,21 @@ export function useCustomers() {
     }
   };
 
+  const getCustomerById = async (id) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const data = await api.get(`/pelanggan/${id}`);
+      return data;
+    } catch (err) {
+      error.value = err.message;
+      console.error('Error fetching customer:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const addCustomer = async (customerData) => {
     await api.post('/pelanggan', customerData);
     await fetchCustomers();
@@ -53,6 +68,7 @@ export function useCustomers() {
     searchQuery,
     filteredCustomers,
     fetchCustomers,
+    getCustomerById,
     addCustomer,
     updateCustomer,
     deleteCustomer

@@ -23,6 +23,21 @@ export function useServicesApi() {
     }
   };
 
+  const getServiceById = async (id) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const data = await api.get(`/layanan/${id}`);
+      return data;
+    } catch (err) {
+      error.value = err.message;
+      console.error('Error fetching service:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const addService = async (serviceData) => {
     const payload = {
       nama_layanan: serviceData.name,
@@ -74,6 +89,7 @@ export function useServicesApi() {
     typeFilter,
     filteredServices,
     fetchServices,
+    getServiceById,
     addService,
     updateService,
     deleteService

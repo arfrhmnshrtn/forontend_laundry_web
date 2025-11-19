@@ -26,19 +26,19 @@
         </svg>
       </button>
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">Tambah Layanan Baru</h2>
-        <p class="text-gray-600 mt-1">Isi form untuk menambahkan layanan</p>
+        <h2 class="text-2xl font-bold text-gray-800">Edit Layanan</h2>
+        <p class="text-gray-600 mt-1">Ubah informasi layanan</p>
       </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg p-6 space-y-6">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-800">Tambah Layanan Baru</h2>
-        <p class="text-gray-600 mt-1">
-          Isi informasi untuk menambahkan layanan
-        </p>
-      </div>
+    <div v-if="loading" class="text-center py-12">
+      <div
+        class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+      ></div>
+      <p class="text-gray-600 mt-4">Memuat data...</p>
+    </div>
 
+    <div v-else class="bg-white shadow rounded-lg p-6 space-y-6">
       <form @submit.prevent="handleSave" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"
@@ -122,7 +122,7 @@
             type="submit"
             class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            Tambah Layanan
+            Simpan Perubahan
           </button>
         </div>
       </form>
@@ -131,15 +131,16 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import AdminLayout from "../components/AdminLayout.vue";
 import AlertNotification from "../components/ui/AlertNotification.vue";
 import { useServicesApi } from "../composables/useServicesApi";
 import { useAlert } from "../composables/useAlert";
 
+const route = useRoute();
 const router = useRouter();
-const { addService } = useServicesApi();
+const { getServiceById, updateService, loading } = useServicesApi();
 const { showAlert, alertMessage, alertType, displayAlert } = useAlert();
 
 const formData = ref({
@@ -150,10 +151,29 @@ const formData = ref({
   duration: 3,
 });
 
+const fetchServiceData = async () => {
+  try {
+    const serviceId = route.params.id;
+    const service = await getServiceById(serviceId);
+    
+    formData.value = {
+      name: service.nama_layanan,
+      description: service.deskripsi || "",
+      type: service.tipe_layanan,
+      price: service.harga,
+      duration: service.durasi,
+    };
+  } catch (error) {
+    displayAlert("Gagal memuat data layanan", "error");
+    router.push("/kelola-layanan");
+  }
+};
+
 const handleSave = async () => {
   try {
-    await addService(formData.value);
-    displayAlert("Layanan berhasil ditambahkan!");
+    const serviceId = route.params.id;
+    await updateService(serviceId, formData.value);
+    displayAlert("Layanan berhasil diperbarui!");
     setTimeout(() => {
       router.push("/kelola-layanan");
     }, 800);
@@ -161,4 +181,6 @@ const handleSave = async () => {
     displayAlert("Terjadi kesalahan", "error");
   }
 };
+
+onMounted(fetchServiceData);
 </script>

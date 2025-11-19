@@ -620,6 +620,8 @@ const formData = ref({
   notes: "",
 });
 
+// console.log(formData.value);
+
 const customerInputMode = ref("existing");
 const saveAsNewCustomer = ref(false);
 const isExistingCustomer = ref(false);
@@ -679,7 +681,7 @@ const addServiceItem = () => {
   });
 };
 
-console.log(selectedServices.value);
+// console.log(selectedServices.value);
 
 const removeServiceItem = (index) => {
   if (selectedServices.value.length > 1) {
@@ -790,7 +792,7 @@ const saveTransaction = async () => {
 
     // Mapping status pembayaran
     const paymentStatusMap = {
-      prepaid: "Bayar Awal",
+      prepaid: "Lunas",
       postpaid: "Belum Bayar",
     };
 

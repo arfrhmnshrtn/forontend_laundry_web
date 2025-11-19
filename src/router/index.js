@@ -3,6 +3,7 @@ import authService from "../services/auth";
 import AdminDashboard from "../pages/AdminDashboard.vue";
 import CustomerData from "../pages/CustomerData.vue";
 import AddCustomer from "../pages/AddCustomer.vue";
+import EditCustomer from "../pages/EditCustomer.vue";
 import TransactionData from "../pages/TransactionData.vue";
 import AddTransaction from "../pages/AddTransaction.vue";
 import TransactionDetail from "../pages/TransactionDetail.vue";
@@ -12,6 +13,7 @@ import KelolaLayanan from "../pages/KelolaLayanan.vue";
 import Settings from "../pages/Settings.vue";
 import Login from "../pages/Login.vue";
 import AddLayanan from "../pages/AddLayanan.vue";
+import EditLayanan from "../pages/EditLayanan.vue";
 
 const routes = [
   {
@@ -36,6 +38,12 @@ const routes = [
     path: "/customers/add",
     name: "AddCustomer",
     component: AddCustomer,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/customers/edit/:id",
+    name: "EditCustomer",
+    component: EditCustomer,
     meta: { requiresAuth: true },
   },
   {
@@ -78,6 +86,12 @@ const routes = [
     path: "/kelola-layanan/add",
     name: "AddLayanan",
     component: AddLayanan,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/kelola-layanan/edit/:id",
+    name: "EditLayanan",
+    component: EditLayanan,
     meta: { requiresAuth: true },
   },
   {

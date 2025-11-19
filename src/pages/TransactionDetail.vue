@@ -5,7 +5,7 @@
       <div class="flex items-center gap-4">
         <button
           @click="$router.back()"
-          class="text-gray-500 hover:text-gray-800 transition-colors"
+          class="text-gray-600 hover:text-gray-800 transition-colors cursor-pointer"
         >
           <svg
             class="w-6 h-6"
@@ -17,7 +17,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              d="M15 19l-7-7 7-7"
             />
           </svg>
         </button>
@@ -207,13 +207,13 @@
               }}</span> -->
               <span
                 :class="
-                  transaction.pembayaran_status === 'Bayar Awal'
+                  transaction.pembayaran_status === 'Lunas'
                     ? 'text-green-500'
                     : 'text-red-500'
                 "
               >
                 {{
-                  transaction.pembayaran_status === "Bayar Awal"
+                  transaction.pembayaran_status === "Lunas"
                     ? "Lunas"
                     : transaction.pembayaran_status
                 }}

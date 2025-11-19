@@ -129,6 +129,10 @@
                 v-for="transaction in filteredTransactions"
                 :key="transaction.id"
                 class="hover:bg-gray-50 transition-colors"
+                v-show="
+                  transaction.status !== 'done' &&
+                  transaction.status !== 'delivered'
+                "
               >
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
@@ -226,22 +230,33 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 flex flex-col gap-2 text-xs">
+                <td
+                  class="px-6 py-4 flex flex-col whitespace-nowrap gap-2 content-center text-xs"
+                >
                   <span
                     :class="
-                      transaction.paymentMethod === 'Bayar Awal'
-                        ? 'bg-green-400 font-semibold p-1 rounded-xl text-white'
-                        : 'bg-red-400 font-semibold p-1 rounded-xl text-white'
+                      transaction.paymentMethod === 'Lunas'
+                        ? 'bg-green-400 font-semibold p-1 rounded-xl text-white text-center'
+                        : 'bg-red-400 font-semibold p-1 rounded-xl text-white text-center'
+                    "
+                  >
+                    {{ transaction.paymentMethod }}
+                  </span>
+                  <span
+                    :class="
+                      transaction.status === 'pending'
+                        ? 'bg-orange-400 text-white p-1 rounded-xl text-center'
+                        : 'text-center bg-green-400 font-semibold p-1 rounded-xl capitalize text-white'
                     "
                   >
                     {{
-                      transaction.paymentMethod === "Bayar Awal"
-                        ? "Lunas"
-                        : transaction.paymentMethod
+                      transaction.status === "pending"
+                        ? "Antrian"
+                        : transaction.status
                     }}
                   </span>
 
-                  <StatusBadge :status="transaction.status" />
+                  <!-- <StatusBadge :status="transaction.status" /> -->
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <div class="flex items-center gap-2">
@@ -290,7 +305,7 @@
                       </svg>
                     </button>
                     <button
-                      @click="handleDelete(transaction.id)"
+                      @click="handleDelete(transaction)"
                       class="text-red-600 hover:text-red-800 transition-colors"
                       title="Hapus"
                     >
@@ -368,6 +383,7 @@ const handleEdit = (transaction) => {
 };
 
 const handleDelete = async (transaction) => {
+  console.log(transaction);
   if (
     !confirm(`Apakah Anda yakin ingin menghapus transaksi #${transaction.id}?`)
   ) {

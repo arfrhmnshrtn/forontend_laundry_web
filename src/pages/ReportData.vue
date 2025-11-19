@@ -177,21 +177,7 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Filter Status</label
-              >
-              <select
-                v-model="statusFilter"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Semua Status</option>
-                <option value="pending">Pending</option>
-                <option value="process">Proses</option>
-                <option value="done">Selesai</option>
-                <option value="delivered">Terkirim</option>
-              </select>
-            </div>
+
             <div class="flex items-end">
               <button
                 @click="applyFilter"
@@ -257,17 +243,24 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ report.weight }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                >
                   {{ formatCurrency(report.total) }}
                 </td>
               </tr>
             </tbody>
             <tfoot class="bg-gray-50 border-t-2 border-gray-300">
               <tr>
-                <td colspan="4" class="px-6 py-4 text-right text-sm font-bold text-gray-900">
+                <td
+                  colspan="4"
+                  class="px-6 py-4 text-right text-sm font-bold text-gray-900"
+                >
                   Total Pendapatan:
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                <td
+                  class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900"
+                >
                   {{ formatCurrency(totalFiltered) }}
                 </td>
               </tr>
@@ -300,184 +293,127 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import AdminLayout from '../components/AdminLayout.vue'
+import { ref, computed, onMounted } from "vue";
+import AdminLayout from "../components/AdminLayout.vue";
+import { useTransactions } from "../composables/useTransactions";
+import { useCustomers } from "../composables/useCustomers";
 
-const dateFrom = ref('')
-const dateTo = ref('')
-const statusFilter = ref('')
+const dateFrom = ref("");
+const dateTo = ref("");
+const statusFilter = ref("");
 
-const reports = ref([
-  {
-    id: 1,
-    date: '2025-11-01',
-    transactionId: 'TRX001',
-    customerName: 'John Doe',
-    customerPhone: '081234567890',
-    serviceType: 'Cuci Kering',
-    weight: 5,
-    status: 'delivered',
-    total: 50000,
-  },
-  {
-    id: 2,
-    date: '2025-11-01',
-    transactionId: 'TRX002',
-    customerName: 'Jane Smith',
-    customerPhone: '081234567891',
-    serviceType: 'Cuci Setrika',
-    weight: 3,
-    status: 'done',
-    total: 36000,
-  },
-  {
-    id: 3,
-    date: '2025-11-02',
-    transactionId: 'TRX003',
-    customerName: 'Bob Johnson',
-    customerPhone: '081234567892',
-    serviceType: 'Setrika',
-    weight: 4,
-    status: 'process',
-    total: 28000,
-  },
-  {
-    id: 4,
-    date: '2025-11-02',
-    transactionId: 'TRX004',
-    customerName: 'Alice Williams',
-    customerPhone: '081234567893',
-    serviceType: 'Cuci Kering',
-    weight: 7,
-    status: 'delivered',
-    total: 70000,
-  },
-  {
-    id: 5,
-    date: '2025-11-03',
-    transactionId: 'TRX005',
-    customerName: 'Charlie Brown',
-    customerPhone: '081234567894',
-    serviceType: 'Express',
-    weight: 2,
-    status: 'done',
-    total: 40000,
-  },
-  {
-    id: 6,
-    date: '2025-11-03',
-    transactionId: 'TRX006',
-    customerName: 'Diana Prince',
-    customerPhone: '081234567895',
-    serviceType: 'Cuci Setrika',
-    weight: 6,
-    status: 'delivered',
-    total: 72000,
-  },
-  {
-    id: 7,
-    date: '2025-11-04',
-    transactionId: 'TRX007',
-    customerName: 'Eko Prasetyo',
-    customerPhone: '081234567896',
-    serviceType: 'Cuci Kering',
-    weight: 4,
-    status: 'pending',
-    total: 40000,
-  },
-])
+const { transactions, loading, fetchTransactions } = useTransactions();
+const { customers, fetchCustomers } = useCustomers();
+
+const reports = computed(() => {
+  return transactions.value
+    .filter((trx) => trx.status === "selesai")
+    .map((trx) => ({
+      id: trx.id,
+      date: trx.dateIn,
+      transactionId: trx.id,
+      customerName: trx.customerName,
+      customerPhone: trx.customerPhone,
+      serviceType: trx.services,
+      weight: trx.berat,
+      status: trx.status,
+      total: trx.totalPrice,
+    }));
+});
 
 const summaryStats = computed(() => {
-  const filtered = filteredReports.value
+  const filtered = filteredReports.value;
+  const activeTransactions = transactions.value.filter(
+    (trx) => trx.status !== "done" && trx.status !== "delivered"
+  );
+
   return {
     totalTransactions: filtered.length,
     totalRevenue: filtered.reduce((sum, item) => sum + item.total, 0),
-    completedTransactions: filtered.filter(
-      (item) => item.status === 'delivered' || item.status === 'done'
-    ).length,
-    activeCustomers: new Set(filtered.map((item) => item.customerName)).size,
-  }
-})
+    completedTransactions: filtered.length,
+    activeCustomers: new Set(activeTransactions.map((trx) => trx.customerName))
+      .size,
+  };
+});
 
 const filteredReports = computed(() => {
-  let filtered = reports.value
+  let filtered = reports.value;
 
   if (dateFrom.value) {
-    filtered = filtered.filter((item) => item.date >= dateFrom.value)
+    filtered = filtered.filter((item) => item.date >= dateFrom.value);
   }
 
   if (dateTo.value) {
-    filtered = filtered.filter((item) => item.date <= dateTo.value)
+    filtered = filtered.filter((item) => item.date <= dateTo.value);
   }
 
-  if (statusFilter.value) {
-    filtered = filtered.filter((item) => item.status === statusFilter.value)
-  }
-
-  return filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
-})
+  return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+});
 
 const totalFiltered = computed(() => {
-  return filteredReports.value.reduce((sum, item) => sum + item.total, 0)
-})
+  return filteredReports.value.reduce((sum, item) => sum + item.total, 0);
+});
 
 const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-}
+  const date = new Date(dateString);
+  return date.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
     minimumFractionDigits: 0,
-  }).format(amount)
-}
+  }).format(amount);
+};
 
 const getStatusClass = (status) => {
   const classes = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    process: 'bg-blue-100 text-blue-800',
-    done: 'bg-green-100 text-green-800',
-    delivered: 'bg-purple-100 text-purple-800',
-  }
-  return classes[status] || 'bg-gray-100 text-gray-800'
-}
+    pending: "bg-yellow-100 text-yellow-800",
+    process: "bg-blue-100 text-blue-800",
+    done: "bg-green-100 text-green-800",
+    delivered: "bg-purple-100 text-purple-800",
+  };
+  return classes[status] || "bg-gray-100 text-gray-800";
+};
 
 const getStatusText = (status) => {
   const texts = {
-    pending: 'Pending',
-    process: 'Proses',
-    done: 'Selesai',
-    delivered: 'Terkirim',
-  }
-  return texts[status] || status
-}
+    pending: "Pending",
+    process: "Proses",
+    done: "Selesai",
+    delivered: "Terkirim",
+  };
+  return texts[status] || status;
+};
 
 const applyFilter = () => {
-  console.log('Filter applied:', {
+  console.log("Filter applied:", {
     dateFrom: dateFrom.value,
     dateTo: dateTo.value,
     status: statusFilter.value,
-  })
-}
+  });
+};
 
 const exportReport = () => {
-  alert('Export to Excel functionality will be implemented')
-}
+  alert("Export to Excel functionality will be implemented");
+};
 
 const printReport = () => {
-  window.print()
-}
+  window.print();
+};
 
-onMounted(() => {
-  const today = new Date()
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
-  dateFrom.value = firstDay.toISOString().split('T')[0]
-  dateTo.value = today.toISOString().split('T')[0]
-})
+onMounted(async () => {
+  await fetchTransactions();
+  await fetchCustomers();
+
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  dateFrom.value = firstDay.toISOString().split("T")[0];
+  dateTo.value = today.toISOString().split("T")[0];
+});
 </script>

@@ -105,7 +105,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <div class="flex items-center gap-2">
                     <button
-                      @click="handleEdit(customer)"
+                      @click="$router.push(`/customers/edit/${customer.id}`)"
                       class="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
                       title="Edit"
                     >
@@ -253,9 +253,7 @@ const handleAdd = () => {
 };
 
 const handleEdit = (customer) => {
-  editingCustomer.value = customer;
-  formData.value = { ...customer };
-  modal.openModal();
+  $router.push(`/customers/edit/${customer.id}`);
 };
 
 const handleSave = async () => {

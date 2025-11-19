@@ -15,7 +15,7 @@
           </p>
         </div>
         <button
-          @click="handleAdd"
+          @click="$router.push('/kelola-layanan/add')"
           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
         >
           <svg
@@ -179,7 +179,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <div class="flex items-center gap-2">
                     <button
-                      @click="handleEdit(service)"
+                      @click="$router.push(`/kelola-layanan/edit/${service.id}`)"
                       class="text-blue-600 hover:text-blue-800 transition-colors"
                       title="Edit"
                     >
@@ -382,15 +382,7 @@ const handleAdd = () => {
 };
 
 const handleEdit = (service) => {
-  editingService.value = service;
-  formData.value = {
-    name: service.nama_layanan,
-    description: service.deskripsi || "",
-    type: service.tipe_layanan,
-    price: service.harga,
-    duration: service.durasi,
-  };
-  modal.openModal();
+  $router.push(`/kelola-layanan/edit/${service.id}`);
 };
 
 const handleSave = async () => {

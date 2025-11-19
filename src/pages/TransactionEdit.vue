@@ -68,59 +68,15 @@
           </div>
 
           <div>
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-semibold text-gray-800">
-                Detail Layanan
-              </h3>
-              <button
-                type="button"
-                @click="addNewService"
-                class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                Tambah Layanan Baru
-              </button>
-            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+              Detail Layanan
+            </h3>
             <div class="space-y-3">
               <div
                 v-for="detail in formData.detailLayanan"
                 :key="detail.id"
-                class="border border-gray-300 rounded-lg p-4 bg-gray-50 relative"
+                class="border border-gray-300 rounded-lg p-4 bg-gray-50"
               >
-                <button
-                  v-if="formData.detailLayanan.length > 1 || newServices.length > 0"
-                  type="button"
-                  @click="removeExistingService(detail.id)"
-                  class="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                  title="Hapus layanan"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -161,133 +117,6 @@
                   </div>
                 </div>
               </div>
-
-              <div
-                v-for="(item, index) in newServices"
-                :key="'new-' + index"
-                class="border border-blue-300 rounded-lg p-4 bg-blue-50 relative"
-              >
-                <button
-                  type="button"
-                  @click="removeNewService(index)"
-                  class="absolute top-2 right-2 text-red-600 hover:text-red-800"
-                  title="Hapus layanan"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Pilih Layanan *
-                    </label>
-                    <select
-                      v-model="item.serviceId"
-                      @change="onNewServiceChange(index)"
-                      required
-                      :disabled="loadingServices"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    >
-                      <option value="">
-                        {{
-                          loadingServices
-                            ? "Memuat layanan..."
-                            : "Pilih layanan"
-                        }}
-                      </option>
-                      <optgroup
-                        label="Layanan Kiloan"
-                        v-if="kiloServices.length > 0"
-                      >
-                        <option
-                          v-for="service in kiloServices"
-                          :key="service.id"
-                          :value="service.id"
-                        >
-                          {{ service.nama_layanan }} - Rp
-                          {{ formatPrice(service.harga) }}/{{
-                            service.satuan_harga
-                          }}
-                          ({{
-                            service.durasi > 24
-                              ? Math.floor(service.durasi / 24) + " hari"
-                              : service.durasi + " jam"
-                          }})
-                        </option>
-                      </optgroup>
-                      <optgroup
-                        label="Layanan Satuan"
-                        v-if="pieceServices.length > 0"
-                      >
-                        <option
-                          v-for="service in pieceServices"
-                          :key="service.id"
-                          :value="service.id"
-                        >
-                          {{ service.nama_layanan }} - Rp
-                          {{ formatPrice(service.harga) }}/{{
-                            service.satuan_harga
-                          }}
-                          ({{ service.durasi }} hari)
-                        </option>
-                      </optgroup>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      {{
-                        item.service?.tipe_layanan?.toLowerCase() === "kiloan"
-                          ? "Berat (kg)"
-                          : "Jumlah (pcs)"
-                      }}
-                      *
-                    </label>
-                    <input
-                      v-model.number="item.quantity"
-                      type="number"
-                      required
-                      min="0"
-                      :step="
-                        item.service?.tipe_layanan?.toLowerCase() === 'kiloan'
-                          ? '0.1'
-                          : '1'
-                      "
-                      @input="calculateNewServiceTotal(index)"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      :placeholder="
-                        item.service?.tipe_layanan?.toLowerCase() === 'kiloan'
-                          ? '0.0'
-                          : '0'
-                      "
-                    />
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Subtotal
-                    </label>
-                    <input
-                      :value="`Rp ${formatPrice(item.subtotal)}`"
-                      type="text"
-                      readonly
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-blue-100 cursor-not-allowed font-semibold text-blue-900"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -297,21 +126,10 @@
                 Total Harga
               </label>
               <input
-                :value="`Rp ${formatPrice(totalPrice)}`"
+                :value="`Rp ${formatPrice(formData.totalPrice)}`"
                 type="text"
                 readonly
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed font-bold text-lg"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Metode Pembayaran
-              </label>
-              <input
-                :value="formData.paymentMethod"
-                type="text"
-                readonly
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
               />
             </div>
           </div>
@@ -326,15 +144,27 @@
                 required
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="pending">Pending</option>
-                <option value="process">Proses</option>
-                <option value="done">Selesai</option>
-                <option value="delivered">Terkirim</option>
+                <option value="pending">Antrian</option>
+                <option value="selesai">Selesai</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Status Pembayaran *
+              </label>
+              <select
+                v-model="formData.paymentMethod"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="Belum Bayar">Belum Bayar</option>
+                <!-- <option value="Bayar Awal">Bayar Awal</option> -->
+                <option value="Lunas">Lunas</option>
               </select>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Tanggal Masuk
@@ -358,9 +188,9 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
               />
             </div>
-          </div>
+          </div> -->
 
-          <div>
+          <!-- <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Catatan
             </label>
@@ -370,7 +200,7 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Catatan tambahan (opsional)"
             ></textarea>
-          </div>
+          </div> -->
 
           <div class="flex gap-3 pt-4 border-t">
             <button
@@ -395,23 +225,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AdminLayout from "../components/AdminLayout.vue";
 import api from "../services/api";
-import { useServices } from "../composables/useServices";
 
 const route = useRoute();
 const router = useRouter();
 const transactionId = route.params.id;
 
-const {
-  kiloServices,
-  pieceServices,
-  getServiceById,
-  loading: loadingServices,
-  fetchServices,
-} = useServices();
+const detailLayanan = ref([]);
 
 const loading = ref(false);
 const submitting = ref(false);
@@ -427,28 +250,14 @@ const formData = ref({
   notes: "",
 });
 
-const newServices = ref([]);
-const deletedServiceIds = ref([]);
-
-const totalPrice = computed(() => {
-  const existingTotal = formData.value.detailLayanan.reduce(
-    (sum, item) => sum + item.subtotal,
-    0
-  );
-  const newTotal = newServices.value.reduce(
-    (sum, item) => sum + item.subtotal,
-    0
-  );
-  return existingTotal + newTotal;
-});
-
 const fetchTransactionDetail = async () => {
   loading.value = true;
   try {
     const response = await api.get(`/transaksi/${transactionId}`);
     const trx = response.data?.data || response.data || response;
 
-    const services = trx.detail_layanan || [];
+    const services = trx.details || [];
+    console.log(services);
     formData.value = {
       customerName: trx.nama_pelanggan,
       customerPhone: trx.no_telepon || "-",
@@ -467,6 +276,7 @@ const fetchTransactionDetail = async () => {
       })),
       notes: trx.catatan || "",
     };
+    // console.log(formData.value.detailLayanan.details);
   } catch (err) {
     alert("Gagal memuat data transaksi: " + err.message);
     router.back();
@@ -475,88 +285,13 @@ const fetchTransactionDetail = async () => {
   }
 };
 
-const addNewService = () => {
-  newServices.value.push({
-    serviceId: "",
-    service: null,
-    quantity: 0,
-    subtotal: 0,
-  });
-};
-
-const removeNewService = (index) => {
-  newServices.value.splice(index, 1);
-};
-
-const removeExistingService = (detailId) => {
-  if (formData.value.detailLayanan.length === 1 && newServices.value.length === 0) {
-    alert("Transaksi harus memiliki minimal 1 layanan");
-    return;
-  }
-
-  if (!confirm("Apakah Anda yakin ingin menghapus layanan ini?")) {
-    return;
-  }
-
-  const index = formData.value.detailLayanan.findIndex(
-    (item) => item.id === detailId
-  );
-  
-  if (index !== -1) {
-    deletedServiceIds.value.push(detailId);
-    formData.value.detailLayanan.splice(index, 1);
-  }
-};
-
-const onNewServiceChange = (index) => {
-  const item = newServices.value[index];
-  if (item.serviceId) {
-    item.service = getServiceById(Number(item.serviceId));
-    calculateNewServiceTotal(index);
-  } else {
-    item.service = null;
-    item.subtotal = 0;
-  }
-};
-
-const calculateNewServiceTotal = (index) => {
-  const item = newServices.value[index];
-  if (item.service && item.quantity > 0) {
-    item.subtotal = item.quantity * parseFloat(item.service.harga);
-  } else {
-    item.subtotal = 0;
-  }
-};
-
 const updateTransaction = async () => {
-  if (formData.value.detailLayanan.length === 0 && newServices.value.length === 0) {
-    alert("Transaksi harus memiliki minimal 1 layanan");
-    return;
-  }
-
   submitting.value = true;
   try {
     const updateData = {
       status: formData.value.status,
-      catatan: formData.value.notes,
+      pembayaran_status: formData.value.paymentMethod,
     };
-
-    if (newServices.value.length > 0) {
-      const newDetail = newServices.value
-        .filter((item) => item.serviceId && item.quantity > 0)
-        .map((item) => ({
-          layanan_id: item.serviceId,
-          berat: item.quantity,
-        }));
-
-      if (newDetail.length > 0) {
-        updateData.detail_baru = newDetail;
-      }
-    }
-
-    if (deletedServiceIds.value.length > 0) {
-      updateData.detail_hapus = deletedServiceIds.value;
-    }
 
     await api.put(`/transaksi/${transactionId}`, updateData);
 
@@ -575,6 +310,5 @@ const formatPrice = (price) => {
 
 onMounted(() => {
   fetchTransactionDetail();
-  fetchServices();
 });
 </script>

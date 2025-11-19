@@ -234,7 +234,11 @@
                         : 'bg-red-400 font-semibold p-1 rounded-xl text-white'
                     "
                   >
-                    {{ transaction.paymentMethod }}
+                    {{
+                      transaction.paymentMethod === "Bayar Awal"
+                        ? "Lunas"
+                        : transaction.paymentMethod
+                    }}
                   </span>
 
                   <StatusBadge :status="transaction.status" />
@@ -286,7 +290,7 @@
                       </svg>
                     </button>
                     <button
-                      @click="handleDelete(transaction)"
+                      @click="handleDelete(transaction.id)"
                       class="text-red-600 hover:text-red-800 transition-colors"
                       title="Hapus"
                     >
@@ -327,6 +331,7 @@
 
 <script setup>
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 import AdminLayout from "../components/AdminLayout.vue";
 import SearchInput from "../components/ui/SearchInput.vue";
 import StatusBadge from "../components/ui/StatusBadge.vue";
@@ -338,6 +343,9 @@ import {
   getInitials,
 } from "../utils/formatters";
 import { STATUS_LABELS } from "../constants";
+import api from "../services/api";
+
+const router = useRouter();
 
 const {
   filteredTransactions,
@@ -351,14 +359,27 @@ const {
 onMounted(fetchTransactions);
 
 const handleView = (transaction) => {
-  alert("Fitur detail akan segera tersedia");
+  // console.log(transaction);
+  router.push(`/transactions/detail/${transaction.id}`);
 };
 
-const handleDelete = (transaction) => {
+const handleEdit = (transaction) => {
+  router.push(`/transactions/edit/${transaction.id}`);
+};
+
+const handleDelete = async (transaction) => {
   if (
-    confirm(`Apakah Anda yakin ingin menghapus transaksi #${transaction.id}?`)
+    !confirm(`Apakah Anda yakin ingin menghapus transaksi #${transaction.id}?`)
   ) {
-    alert("Fitur hapus akan segera tersedia");
+    return;
+  }
+
+  try {
+    await api.delete(`/transaksi/${transaction.id}`);
+    alert("Transaksi berhasil dihapus");
+    fetchTransactions();
+  } catch (err) {
+    alert("Gagal menghapus transaksi: " + err.message);
   }
 };
 

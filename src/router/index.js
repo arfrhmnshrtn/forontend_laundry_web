@@ -5,10 +5,13 @@ import CustomerData from "../pages/CustomerData.vue";
 import AddCustomer from "../pages/AddCustomer.vue";
 import TransactionData from "../pages/TransactionData.vue";
 import AddTransaction from "../pages/AddTransaction.vue";
+import TransactionDetail from "../pages/TransactionDetail.vue";
+import TransactionEdit from "../pages/TransactionEdit.vue";
 import ReportData from "../pages/ReportData.vue";
 import KelolaLayanan from "../pages/KelolaLayanan.vue";
 import Settings from "../pages/Settings.vue";
 import Login from "../pages/Login.vue";
+import AddLayanan from "../pages/AddLayanan.vue";
 
 const routes = [
   {
@@ -48,6 +51,18 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/transactions/detail/:id",
+    name: "TransactionDetail",
+    component: TransactionDetail,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/transactions/edit/:id",
+    name: "TransactionEdit",
+    component: TransactionEdit,
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/reports",
     name: "Reports",
     component: ReportData,
@@ -57,6 +72,12 @@ const routes = [
     path: "/kelola-layanan",
     name: "KelolaLayanan",
     component: KelolaLayanan,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/kelola-layanan/add",
+    name: "AddLayanan",
+    component: AddLayanan,
     meta: { requiresAuth: true },
   },
   {

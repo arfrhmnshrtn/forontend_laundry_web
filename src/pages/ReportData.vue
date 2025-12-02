@@ -1,14 +1,25 @@
 <template>
   <AdminLayout>
     <div class="space-y-6">
+      <div class="print-only hidden text-center mb-6">
+        <h1 class="text-3xl font-bold">LAPORAN TRANSAKSI LAUNDRY</h1>
+        <p class="text-gray-600 mt-1">Sistem Laundry Management</p>
+        <p class="text-sm text-gray-500 mt-2">
+          Periode: {{ formatDate(dateFrom) }} - {{ formatDate(dateTo) }}
+        </p>
+        <p class="text-sm text-gray-500">
+          Dicetak pada: {{ new Date().toLocaleDateString("id-ID") }}
+        </p>
+      </div>
+
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-2xl font-bold text-gray-800">Data Laporan</h2>
           <p class="text-gray-600 mt-1">Laporan transaksi dan pendapatan</p>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 no-print">
           <button
-            @click="exportReport"
+            @click="handleExportReport"
             class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
           >
             <svg
@@ -25,25 +36,6 @@
               />
             </svg>
             Export Excel
-          </button>
-          <button
-            @click="printReport"
-            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-              />
-            </svg>
-            Print
           </button>
         </div>
       </div>
@@ -155,7 +147,7 @@
       </div>
 
       <div class="bg-white rounded-lg shadow">
-        <div class="p-6 border-b border-gray-200">
+        <div class="p-6 border-b border-gray-200 no-print">
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
               <label class="block text-sm font-medium text-gray-700 mb-2"
@@ -297,6 +289,7 @@ import { ref, computed, onMounted } from "vue";
 import AdminLayout from "../components/AdminLayout.vue";
 import { useTransactions } from "../composables/useTransactions";
 import { useCustomers } from "../composables/useCustomers";
+import { useExportReport } from "../composables/exportExel";
 
 const dateFrom = ref("");
 const dateTo = ref("");
@@ -304,6 +297,7 @@ const statusFilter = ref("");
 
 const { transactions, loading, fetchTransactions } = useTransactions();
 const { customers, fetchCustomers } = useCustomers();
+const { exportReport } = useExportReport();
 
 const reports = computed(() => {
   return transactions.value
@@ -371,6 +365,18 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
+// const formatDateTime = (dateString) => {
+//   if (!dateString) return "-";
+//   const date = new Date(dateString);
+//   return date.toLocaleDateString("id-ID", {
+//     day: "2-digit",
+//     month: "short",
+//     year: "numeric",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   });
+// };
+
 const getStatusClass = (status) => {
   const classes = {
     pending: "bg-yellow-100 text-yellow-800",
@@ -399,8 +405,11 @@ const applyFilter = () => {
   });
 };
 
-const exportReport = () => {
-  alert("Export to Excel functionality will be implemented");
+// console.log("Filtered Reports:", filteredReports.value);
+
+const handleExportReport = () => {
+  console.log(transactions.value);
+  exportReport(transactions.value, dateFrom.value, dateTo.value);
 };
 
 const printReport = () => {
@@ -417,3 +426,87 @@ onMounted(async () => {
   dateTo.value = today.toISOString().split("T")[0];
 });
 </script>
+
+<style>
+@media print {
+  /* Hide elements that shouldn't be printed */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Show elements only for print */
+  .print-only {
+    display: block !important;
+  }
+
+  /* General print styles */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Ensure the table takes full width and looks good in print */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+    text-align: left !important;
+  }
+
+  thead {
+    background-color: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  tfoot {
+    background-color: #f9f9f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure stat cards are visible in print */
+  .grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .bg-white {
+    background: white !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Page break management */
+  .space-y-6 > * {
+    page-break-inside: avoid;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+}
+</style>

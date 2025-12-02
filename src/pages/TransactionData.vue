@@ -130,8 +130,8 @@
                 :key="transaction.id"
                 class="hover:bg-gray-50 transition-colors"
                 v-show="
-                  transaction.status !== 'done' &&
-                  transaction.status !== 'delivered'
+                  transaction.status !== 'selesai' &&
+                  transaction.paymentMethod !== 'Lunas'
                 "
               >
                 <td
@@ -305,6 +305,26 @@
                       </svg>
                     </button>
                     <button
+                      @click="printReceipt(transaction)"
+                      class="text-purple-600 hover:text-purple-800 transition-colors"
+                      title="Print Struk"
+                    >
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m10 0v1a3 3 0 01-3 3H8a3 3 0 01-3-3v-1m10 0H7"
+                        />
+                      </svg>
+                    </button>
+
+                    <button
                       @click="handleDelete(transaction)"
                       class="text-red-600 hover:text-red-800 transition-colors"
                       title="Hapus"
@@ -330,7 +350,7 @@
           </table>
 
           <EmptyState
-            v-if="filteredTransactions.length === 0"
+            v-if="visibleTransactions.length === 0"
             title="Tidak ada data transaksi"
             :description="
               searchQuery
@@ -345,22 +365,32 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import AdminLayout from "../components/AdminLayout.vue";
 import SearchInput from "../components/ui/SearchInput.vue";
 import StatusBadge from "../components/ui/StatusBadge.vue";
 import EmptyState from "../components/ui/EmptyState.vue";
 import { useTransactions } from "../composables/useTransactions";
+import { usePrintReceipt } from "../composables/usePrintReceipt";
 import {
   formatDate,
   formatPriceWithCurrency,
   getInitials,
 } from "../utils/formatters";
-import { STATUS_LABELS } from "../constants";
+
 import api from "../services/api";
 
 const router = useRouter();
+
+// Define status labels locally
+const STATUS_LABELS = {
+  pending: "Antrian",
+  process: "Proses",
+  selesai: "Selesai",
+  done: "Selesai",
+  delivered: "Terkirim",
+};
 
 const {
   filteredTransactions,
@@ -370,6 +400,17 @@ const {
   error,
   fetchTransactions,
 } = useTransactions();
+
+const visibleTransactions = computed(() => {
+  return filteredTransactions.value.filter(
+    (transaction) =>
+      transaction.status !== 'selesai' || transaction.paymentMethod !== 'Lunas'
+  );
+});
+
+const { printReceipt } = usePrintReceipt();
+
+// console.log(filteredTransactions.value);
 
 onMounted(fetchTransactions);
 

@@ -222,20 +222,42 @@
           </div>
 
           <!-- Aksi -->
-          <div class="flex gap-2">
+          <div class="space-y-2">
             <button
-              @click="$router.push(`/transactions/edit/${transaction.id}`)"
-              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+              @click="printReceipt(transaction.value)"
+              class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center gap-2"
             >
-              Edit
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m10 0v1a3 3 0 01-3 3H8a3 3 0 01-3-3v-1m10 0H7"
+                />
+              </svg>
+              Print Struk
             </button>
+            
+            <div class="flex gap-2">
+              <button
+                @click="$router.push(`/transactions/edit/${transaction.id}`)"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                Edit
+              </button>
 
-            <button
-              @click="handleDelete"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-            >
-              Hapus
-            </button>
+              <button
+                @click="handleDelete"
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                Hapus
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -249,6 +271,7 @@ import { useRoute, useRouter } from "vue-router";
 import AdminLayout from "../components/AdminLayout.vue";
 import StatusBadge from "../components/ui/StatusBadge.vue";
 import api from "../services/api";
+import { usePrintReceipt } from "../composables/usePrintReceipt";
 import { formatDate, formatPriceWithCurrency } from "../utils/formatters";
 
 const route = useRoute();
@@ -256,6 +279,7 @@ const router = useRouter();
 const transaction = ref(null);
 const loading = ref(false);
 const error = ref(null);
+const { printReceipt } = usePrintReceipt();
 
 const fetchTransactionDetail = async () => {
   loading.value = true;

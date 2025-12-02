@@ -2,10 +2,8 @@
   <aside
     ref="sidebarRef"
     :class="[
-      'bg-gray-900 text-white fixed left-0 top-16 bottom-0 overflow-y-auto overflow-x-hidden transition-all duration-300',
-      isOpen
-        ? 'w-64 z-30'
-        : 'w-20 max-lg:-translate-x-full lg:translate-x-0 z-20',
+      'bg-gray-900 text-white fixed left-0 top-16 z-40 bottom-0 overflow-y-auto overflow-x-hidden transition-all duration-300',
+      isOpen ? 'w-64 z-30' : 'w-20',
     ]"
   >
     <nav class="p-4">
@@ -203,7 +201,7 @@
         </li>
 
         <!-- Settings -->
-        <li class="pt-4 mt-4 border-t border-gray-700 relative group">
+        <!-- <li class="pt-4 mt-4 border-t border-gray-700 relative group">
           <router-link
             to="/settings"
             :class="[
@@ -244,7 +242,7 @@
               class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-800"
             ></div>
           </div>
-        </li>
+        </li> -->
 
         <!-- Logout -->
         <li class="relative group">
@@ -308,8 +306,6 @@ const sidebarRef = ref(null);
 const handleMenuClick = () => {
   if (window.innerWidth < 1024) {
     emit("close-sidebar");
-  } else if (!props.isOpen) {
-    emit("open-sidebar");
   }
 };
 

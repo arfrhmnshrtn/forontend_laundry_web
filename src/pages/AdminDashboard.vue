@@ -13,12 +13,14 @@
         <p class="text-gray-600 mt-4">Memuat data dashboard...</p>
       </div>
 
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div v-else class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Total Order</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalOrders }}</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">
+                {{ totalOrders }}
+              </p>
             </div>
             <div class="bg-blue-100 p-3 rounded-full">
               <svg
@@ -42,7 +44,9 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Pendapatan</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">{{ formatPriceWithCurrency(totalRevenue) }}</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">
+                {{ formatPriceWithCurrency(totalRevenue) }}
+              </p>
             </div>
             <div class="bg-green-100 p-3 rounded-full">
               <svg
@@ -66,7 +70,9 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-sm text-gray-600 font-medium">Pelanggan</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalCustomers }}</p>
+              <p class="text-3xl font-bold text-gray-800 mt-2">
+                {{ totalCustomers }}
+              </p>
             </div>
             <div class="bg-purple-100 p-3 rounded-full">
               <svg
@@ -80,30 +86,6 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600 font-medium">Pesanan Tertunda</p>
-              <p class="text-3xl font-bold text-gray-800 mt-2">{{ pendingOrders }}</p>
-            </div>
-            <div class="bg-orange-100 p-3 rounded-full">
-              <svg
-                class="w-8 h-8 text-orange-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
             </div>
@@ -126,19 +108,28 @@
                 <div
                   class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"
                 >
-                  <span class="text-blue-600 font-semibold text-sm">#{{ order.id }}</span>
+                  <span class="text-blue-600 font-semibold text-sm"
+                    >#{{ order.id }}</span
+                  >
                 </div>
                 <div>
-                  <p class="font-medium text-gray-800">{{ order.customerName }}</p>
-                  <p class="text-sm text-gray-500">{{ order.services }} - {{ formatWeight(order.berat) }}</p>
+                  <p class="font-medium text-gray-800">
+                    {{ order.customerName }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    {{ order.services }} - {{ formatWeight(order.berat) }}
+                  </p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="font-semibold text-gray-800">{{ formatPriceWithCurrency(order.totalPrice) }}</p>
+                <p class="font-semibold text-gray-800">
+                  {{ formatPriceWithCurrency(order.totalPrice) }}
+                </p>
                 <span
                   :class="getStatusBadgeClass(order.status)"
                   class="text-xs px-2 py-1 rounded-full"
-                >{{ getStatusLabel(order.status) }}</span>
+                  >{{ getStatusLabel(order.status) }}</span
+                >
               </div>
             </div>
           </div>
@@ -220,7 +211,7 @@
                 >Lihat Laporan</span
               >
             </button>
-
+            <!-- 
             <button
               class="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
             >
@@ -244,7 +235,7 @@
                 />
               </svg>
               <span class="text-sm font-medium text-gray-700">Pengaturan</span>
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -263,32 +254,40 @@ const transactions = ref([]);
 const customers = ref([]);
 
 const totalOrders = computed(() => transactions.value.length);
-const totalRevenue = computed(() => 
-  transactions.value.reduce((sum, trx) => sum + parseFloat(trx.total_harga || 0), 0)
+const totalRevenue = computed(() =>
+  transactions.value.reduce(
+    (sum, trx) => sum + parseFloat(trx.total_harga || 0),
+    0
+  )
 );
 const totalCustomers = computed(() => customers.value.length);
-const pendingOrders = computed(() => 
-  transactions.value.filter(trx => 
-    trx.status.toLowerCase() === 'proses' || 
-    trx.status.toLowerCase() === 'menunggu'
-  ).length
+const pendingOrders = computed(
+  () =>
+    transactions.value.filter(
+      (trx) =>
+        trx.status.toLowerCase() === "proses" ||
+        trx.status.toLowerCase() === "menunggu"
+    ).length
 );
 const recentOrders = computed(() => {
-  const sorted = [...transactions.value].sort((a, b) => 
-    new Date(b.tanggal_masuk) - new Date(a.tanggal_masuk)
+  const sorted = [...transactions.value].sort(
+    (a, b) => new Date(b.tanggal_masuk) - new Date(a.tanggal_masuk)
   );
-  return sorted.slice(0, 3).map(trx => {
+  return sorted.slice(0, 3).map((trx) => {
     const services = trx.detail_layanan || [];
-    const serviceNames = services.map(s => s.nama_layanan).join(", ");
-    const totalBerat = services.reduce((sum, s) => sum + parseFloat(s.berat || 0), 0);
-    
+    const serviceNames = services.map((s) => s.nama_layanan).join(", ");
+    const totalBerat = services.reduce(
+      (sum, s) => sum + parseFloat(s.berat || 0),
+      0
+    );
+
     return {
       id: trx.transaksi_id,
       customerName: trx.nama_pelanggan,
       services: serviceNames || "-",
       berat: totalBerat,
       totalPrice: parseFloat(trx.total_harga),
-      status: trx.status.toLowerCase()
+      status: trx.status.toLowerCase(),
     };
   });
 });
@@ -298,10 +297,11 @@ const fetchDashboardData = async () => {
   try {
     const [transactionsRes, customersRes] = await Promise.all([
       api.get("/transaksi"),
-      api.get("/pelanggan")
+      api.get("/pelanggan"),
     ]);
-    
-    transactions.value = transactionsRes.data?.data || transactionsRes.data || transactionsRes;
+
+    transactions.value =
+      transactionsRes.data?.data || transactionsRes.data || transactionsRes;
     customers.value = customersRes || [];
   } catch (error) {
     console.error("Error fetching dashboard data:", error);
@@ -318,21 +318,21 @@ const formatWeight = (weight) => {
 
 const getStatusLabel = (status) => {
   const labels = {
-    'proses': 'Proses',
-    'selesai': 'Selesai',
-    'menunggu': 'Menunggu',
-    'diambil': 'Diambil'
+    proses: "Proses",
+    selesai: "Selesai",
+    menunggu: "Menunggu",
+    diambil: "Diambil",
   };
   return labels[status] || status;
 };
 
 const getStatusBadgeClass = (status) => {
   const classes = {
-    'proses': 'bg-yellow-100 text-yellow-700',
-    'selesai': 'bg-green-100 text-green-700',
-    'menunggu': 'bg-orange-100 text-orange-700',
-    'diambil': 'bg-blue-100 text-blue-700'
+    proses: "bg-yellow-100 text-yellow-700",
+    selesai: "bg-green-100 text-green-700",
+    menunggu: "bg-orange-100 text-orange-700",
+    diambil: "bg-blue-100 text-blue-700",
   };
-  return classes[status] || 'bg-gray-100 text-gray-700';
+  return classes[status] || "bg-gray-100 text-gray-700";
 };
 </script>
